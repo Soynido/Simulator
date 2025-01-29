@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulateur BackRoom</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            text-align: center;
+            color: #1a73e8;
+        }
+        label {
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #1558b0;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e8f0fe;
+            border-left: 5px solid #1a73e8;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Simulateur BackRoom</h1>
+        <label for="businessType">Type d’Entreprise :</label>
+        <select id="businessType">
+            <option value="PME Autonome">PME Autonome (CB via Stripe)</option>
+            <option value="PME Facture">PME (Facture & Bon de Commande)</option>
+            <option value="Grand Compte">Grand Compte (Facture & Bon de Commande)</option>
+        </select>
+        
+        <label for="pageRange">Nombre de pages sous gestion estimées du prospect :</label>
+        <input type="number" id="pageRange" min="1" placeholder="Ex: 10">
+        
+        <label for="projection">Le prospect se projette-t-il facilement avec l'outil ?</label>
+        <select id="projection">
+            <option value="oui">Oui</option>
+            <option value="non">Non</option>
+        </select>
+        
+        <button onclick="calculateOffer()">Simuler</button>
+        
+        <div class="result" id="result"></div>
+    </div>
+    
+    <script>
+        function calculateOffer() {
+            let businessType = document.getElementById("businessType").value;
+            let pages = parseInt(document.getElementById("pageRange").value);
+            let projection = document.getElementById("projection").value;
+            let resultDiv = document.getElementById("result");
+            let offer = "", upgrade = "", upgradeCredits = "", upgradePrice = "", upgradeValidity = "", consumption = "Faible (1 report/page/mois)", credits = "", pricePerCredit = "", validity = "", totalCredits = "", reasons = "", salesPitch = "";
+            
+            if (projection === "oui") {
+                if (businessType === "PME Autonome") {
+                    offer = "Plan Starter (79,99€/mois)";
+                    credits = "2 crédits/mois";
+                    pricePerCredit = "39,99€";
+                    validity = "1 mois";
+                    totalCredits = "2 crédits par mois";
+                    reasons = "Avantage : abonnement flexible avec des crédits valables 1 mois";
+                    upgrade = "Plan Growth (249€/mois)";
+                    upgradeCredits = "5 crédits/mois";
+                    upgradePrice = "49,99€";
+                    upgradeValidity = "3 mois";
+                } else if (pages <= 49) {
+                    offer = "Pack Growth (49,99€/crédit)";
+                    credits = "5-49 crédits";
+                    pricePerCredit = "49,99€";
+                    validity = "3 mois";
+                    totalCredits = "Variable selon le pack choisi";
+                    reasons = "Avantage : Tarification dégressive, crédits valables 3 mois";
+                    upgrade = "Pack Scale (50 crédits, 44,99€/crédit)";
+                    upgradeCredits = "50 crédits";
+                    upgradePrice = "44,99€";
+                    upgradeValidity = "6 mois";
+                } else {
+                    offer = "Pack Scale (50 crédits, 44,99€/crédit)";
+                    credits = "50+ crédits";
+                    pricePerCredit = "44,99€";
+                    validity = "6 mois";
+                    totalCredits = "50 crédits minimum sur 6 mois";
+                    reasons = "Avantage : Volume plus important, tarif réduit, paiement unique par bon de commande";
+                    upgrade = "Abonnement annuel Enterprise";
+                    upgradeCredits = "Sur mesure";
+                    upgradePrice = "Tarif négocié";
+                    upgradeValidity = "Personnalisée";
+                }
+            } else {
+                offer = "Pack Starter (79,99€/crédit)";
+                credits = "1-5 crédits";
+                pricePerCredit = "79,99€";
+                validity = "1 mois";
+                totalCredits = "1-5 crédits utilisables en 1 mois";
+                reasons = "Avantage : tester après le report gratuit sans engagement";
+                upgrade = "Pack Growth (49,99€/crédit)";
+                upgradeCredits = "5 crédits et plus";
+                upgradePrice = "49,99€";
+                upgradeValidity = "3 mois";
+            }
+            
+            salesPitch = "Chaque nouvelle page connectée bénéficie d'un report gratuit limité, idéal pour tester l'efficacité avant d'optimiser votre stratégie avec notre offre évolutive.";
+            
+            resultDiv.innerHTML = `<h2>📌 Offre de Démarrage</h2>
+                                   <p><strong>Type d’Offre :</strong> ${offer}</p>
+                                   <p><strong>Crédits Inclus :</strong> ${credits}</p>
+                                   <p><strong>Prix unitaire par crédit :</strong> ${pricePerCredit}</p>
+                                   <p><strong>Validité des crédits :</strong> ${validity}</p>
+                                   <p><strong>Nombre total de crédits sur la période :</strong> ${totalCredits}</p>
+                                   <p><strong>Pourquoi choisir cette offre ?</strong> ${reasons}</p>
+                                   
+                                   <h2>📈 Objectif de Montée en Gamme</h2>
+                                   <p><strong>Offre Ciblée :</strong> ${upgrade}</p>
+                                   <p><strong>Crédits Inclus :</strong> ${upgradeCredits}</p>
+                                   <p><strong>Prix unitaire par crédit :</strong> ${upgradePrice}</p>
+                                   <p><strong>Validité des crédits :</strong> ${upgradeValidity}</p>
+                                   
+                                   <h2>⚡ Niveau de Consommation</h2>
+                                   <p><strong>Usage estimé :</strong> ${consumption}</p>
+                                   
+                                   <h2>🎯 Argumentaire de Vente</h2>
+                                   <p>${salesPitch}</p>`;
+        }
+    </script>
+</body>
+</html>
